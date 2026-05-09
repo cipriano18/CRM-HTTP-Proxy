@@ -1,12 +1,9 @@
 module com.mycompany.serverproxy {
     requires javafx.controls;
     requires javafx.fxml;
+    requires java.base;
 
     opens project to javafx.fxml;
     exports project;
-    exports model;
-    exports repository;
-    exports server;
-    exports handlers;
-    exports service;
+    opens controller to javafx.fxml;
 }

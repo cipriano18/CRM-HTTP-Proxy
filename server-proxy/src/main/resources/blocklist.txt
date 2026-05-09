@@ -1,9 +1,0 @@
-# Dominios bloqueados
-facebook.com
-youtube.com
-instagram.com
-
-# Palabras clave para HTTP
-tiktok
-streaming
-ads
