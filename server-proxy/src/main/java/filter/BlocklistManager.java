@@ -1,27 +1,23 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package filter;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author cipriano
+ * Administra las reglas de bloqueo almacenadas en blocklist.txt.
  */
 public class BlocklistManager {
 
     /**
      * Ruta del archivo donde se guardan las reglas.
      */
-    private static final String FILE_PATH =
-            "src/main/resources/data/blocklist.txt";
+    private static final Path FILE_PATH =
+            Path.of("src/main/resources/data/blocklist.txt");
 
     /**
      * Obtiene todas las reglas del archivo.
@@ -30,7 +26,12 @@ public class BlocklistManager {
      */
     public static List<String> getRules() {
         try {
-            return Files.readAllLines(Path.of(FILE_PATH));
+            ensureFileExists();
+            String content = Files.readString(
+                    FILE_PATH,
+                    StandardCharsets.UTF_8
+            );
+            return parseRules(content);
         } catch (IOException e) {
             System.out.println("Error leyendo blocklist.txt");
             return new ArrayList<>();
@@ -40,9 +41,6 @@ public class BlocklistManager {
     /**
      * Agrega un dominio bloqueado.
      *
-     * Ejemplo:
-     * DOMAIN:youtube.com
-     *
      * @param domain dominio a bloquear.
      */
     public static void addDomain(String domain) {
@@ -50,10 +48,27 @@ public class BlocklistManager {
     }
 
     /**
-     * Agrega una palabra clave bloqueada.
+     * Elimina un dominio bloqueado.
      *
-     * Ejemplo:
-     * KEYWORD:juegos
+     * @param domain dominio a eliminar.
+     * @return true si el dominio existia y fue eliminado.
+     */
+    public static boolean removeDomain(String domain) {
+        return removeRule("DOMAIN", domain);
+    }
+
+    /**
+     * Elimina una palabra clave bloqueada.
+     *
+     * @param keyword palabra clave a eliminar.
+     * @return true si la palabra existia y fue eliminada.
+     */
+    public static boolean removeKeyword(String keyword) {
+        return removeRule("KEYWORD", keyword);
+    }
+
+    /**
+     * Agrega una palabra clave bloqueada.
      *
      * @param keyword palabra clave a bloquear.
      */
@@ -68,19 +83,28 @@ public class BlocklistManager {
      * @param value valor a bloquear.
      */
     private static void addRule(String type, String value) {
-        try {
-            String rule = type.toUpperCase() + ":" + value.trim().toLowerCase();
+        String normalizedValue = normalizeValue(value);
 
+        if (normalizedValue.isBlank()) {
+            return;
+        }
+
+        try {
+            ensureFileExists();
+
+            String rule = buildRule(type, normalizedValue);
             List<String> rules = getRules();
 
-            if (rules.contains(rule)) {
+            if (rules.stream().anyMatch(existingRule
+                    -> existingRule.trim().equalsIgnoreCase(rule))) {
                 System.out.println("La regla ya existe: " + rule);
                 return;
             }
 
             Files.write(
-                    Path.of(FILE_PATH),
-                    (rule + System.lineSeparator()).getBytes(),
+                    FILE_PATH,
+                    (rule + System.lineSeparator())
+                            .getBytes(StandardCharsets.UTF_8),
                     StandardOpenOption.CREATE,
                     StandardOpenOption.APPEND
             );
@@ -93,6 +117,53 @@ public class BlocklistManager {
     }
 
     /**
+     * Elimina una regla de la blocklist.
+     *
+     * @param type DOMAIN o KEYWORD.
+     * @param value valor a eliminar.
+     * @return true si la regla existia y fue eliminada.
+     */
+    private static boolean removeRule(String type, String value) {
+        String normalizedValue = normalizeValue(value);
+        String expectedRule = buildRule(type, normalizedValue);
+
+        try {
+            ensureFileExists();
+
+            List<String> updatedRules = new ArrayList<>();
+            boolean removed = false;
+
+            for (String rule : getRules()) {
+                if (!removed
+                        && rule.trim().equalsIgnoreCase(expectedRule)) {
+                    removed = true;
+                    continue;
+                }
+
+                updatedRules.add(rule);
+            }
+
+            if (!removed) {
+                return false;
+            }
+
+            Files.write(
+                    FILE_PATH,
+                    updatedRules,
+                    StandardCharsets.UTF_8,
+                    StandardOpenOption.TRUNCATE_EXISTING,
+                    StandardOpenOption.WRITE
+            );
+
+            return true;
+
+        } catch (IOException e) {
+            System.out.println("Error eliminando regla");
+            return false;
+        }
+    }
+
+    /**
      * Obtiene solamente los dominios bloqueados.
      *
      * @return lista de dominios.
@@ -101,10 +172,12 @@ public class BlocklistManager {
         List<String> domains = new ArrayList<>();
 
         for (String rule : getRules()) {
-            rule = rule.trim().toLowerCase();
+            String normalizedRule = rule.trim().toLowerCase();
 
-            if (rule.startsWith("domain:")) {
-                domains.add(rule.replace("domain:", "").trim());
+            if (normalizedRule.startsWith("domain:")) {
+                domains.add(
+                        normalizedRule.replace("domain:", "").trim()
+                );
             }
         }
 
@@ -120,13 +193,103 @@ public class BlocklistManager {
         List<String> keywords = new ArrayList<>();
 
         for (String rule : getRules()) {
-            rule = rule.trim().toLowerCase();
+            String normalizedRule = rule.trim().toLowerCase();
 
-            if (rule.startsWith("keyword:")) {
-                keywords.add(rule.replace("keyword:", "").trim());
+            if (normalizedRule.startsWith("keyword:")) {
+                keywords.add(
+                        normalizedRule.replace("keyword:", "").trim()
+                );
             }
         }
 
         return keywords;
+    }
+
+    /**
+     * Crea el archivo de reglas si todavia no existe.
+     *
+     * @throws IOException si no se puede crear.
+     */
+    private static void ensureFileExists() throws IOException {
+        if (Files.notExists(FILE_PATH.getParent())) {
+            Files.createDirectories(FILE_PATH.getParent());
+        }
+
+        if (Files.notExists(FILE_PATH)) {
+            Files.createFile(FILE_PATH);
+        }
+    }
+
+    /**
+     * Construye el formato estandar de una regla.
+     *
+     * @param type tipo de regla.
+     * @param value valor limpio.
+     * @return regla formateada.
+     */
+    private static String buildRule(String type, String value) {
+        return type.toUpperCase() + ":" + value;
+    }
+
+    /**
+     * Parsea reglas incluso si quedaron concatenadas en una sola linea.
+     *
+     * @param content contenido bruto del archivo.
+     * @return lista de reglas individuales.
+     */
+    private static List<String> parseRules(String content) {
+        List<String> rules = new ArrayList<>();
+
+        if (content == null || content.isBlank()) {
+            return rules;
+        }
+
+        String normalizedContent = content
+                .replace("\r\n", "\n")
+                .replace("\r", "\n")
+                .replaceAll("(?i)(?<!^)(DOMAIN:|KEYWORD:)", "\n$1");
+
+        for (String line : normalizedContent.split("\\n")) {
+            String normalizedLine = line.trim();
+
+            if (normalizedLine.isBlank()) {
+                continue;
+            }
+
+            int separatorIndex = normalizedLine.indexOf(':');
+            if (separatorIndex <= 0) {
+                continue;
+            }
+
+            String type = normalizedLine.substring(
+                    0,
+                    separatorIndex
+            ).trim().toUpperCase();
+
+            String value = normalizeValue(
+                    normalizedLine.substring(separatorIndex + 1)
+            );
+
+            if (("DOMAIN".equals(type) || "KEYWORD".equals(type))
+                    && !value.isBlank()) {
+                rules.add(buildRule(type, value));
+            }
+        }
+
+        return rules;
+    }
+
+    /**
+     * Normaliza un valor antes de persistirlo.
+     *
+     * @param value valor original.
+     * @return valor limpio en minusculas.
+     */
+    private static String normalizeValue(String value) {
+        if (value == null) {
+            return "";
+        }
+
+        return value.trim().toLowerCase();
     }
 }

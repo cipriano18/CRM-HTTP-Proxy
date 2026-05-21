@@ -1,0 +1,329 @@
+/* ═══════════════════════════════════════════
+   superAdmin.css
+   ═══════════════════════════════════════════ */
+
+.root {
+    -fx-background-color: #f6f9ff;
+    -fx-font-family: "Segoe UI", "Helvetica Neue", sans-serif;
+}
+
+/* ─── Section header ─── */
+.section-header {
+    -fx-background-color: #f6f9ff;
+}
+
+.section-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #161c22;
+}
+
+/* ─── Cards ─── */
+.card {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 12;
+    -fx-border-color: #e5e9f0;
+    -fx-border-width: 1;
+    -fx-border-radius: 12;
+    -fx-effect: dropshadow(gaussian, rgba(22,28,34,0.07), 24, 0, 0, 4);
+}
+
+.card-title {
+    -fx-font-size: 14px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #161c22;
+}
+
+/* ─── Field labels ─── */
+.field-label {
+    -fx-font-size: 10px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #6b7280;
+}
+
+/* ─── Wrapper contraseña ─── */
+.password-wrapper {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+    -fx-pref-height: 40;
+    -fx-min-height: 40;
+    -fx-max-height: 40;
+}
+
+/* ─── TextField / PasswordField ─── */
+.field-input {
+    -fx-background-color: #f6f9ff;
+    -fx-background-insets: 0;
+    -fx-background-radius: 8;
+
+    -fx-border-color: #c0c7d3;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+
+    -fx-padding: 10 40 10 14;
+    -fx-font-size: 13px;
+    -fx-font-family: "Segoe UI", "Helvetica Neue", sans-serif;
+    -fx-text-fill: #161c22;
+    -fx-prompt-text-fill: #a0aab4;
+
+    -fx-pref-height: 40;
+    -fx-min-height: 40;
+    -fx-max-height: 40;
+
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+.field-input:focused {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #C8102E;
+    -fx-effect: dropshadow(gaussian, rgba(200,16,46,0.15), 8, 0, 0, 0);
+
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+/* PasswordField y TextField visible iguales */
+.field-password {
+    -fx-background-color: #f6f9ff;
+    -fx-background-insets: 0;
+    -fx-background-radius: 8;
+
+    -fx-border-color: #c0c7d3;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+
+    -fx-padding: 10 40 10 14;
+    -fx-font-size: 13px;
+    -fx-font-family: "Segoe UI", "Helvetica Neue", sans-serif;
+    -fx-text-fill: #161c22;
+    -fx-prompt-text-fill: #a0aab4;
+
+    -fx-pref-height: 40;
+    -fx-min-height: 40;
+    -fx-max-height: 40;
+
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+.field-password:focused {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #C8102E;
+    -fx-effect: dropshadow(gaussian, rgba(200,16,46,0.15), 8, 0, 0, 0);
+
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+/* ─── Eye toggle button ─── */
+.eye-btn {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-text-fill: #9ba3af;
+    -fx-font-size: 14px;
+    -fx-padding: 0 10 0 0;
+    -fx-cursor: hand;
+
+    -fx-min-width: 32px;
+    -fx-pref-width: 32px;
+    -fx-max-width: 32px;
+
+    -fx-min-height: 32px;
+    -fx-pref-height: 32px;
+    -fx-max-height: 32px;
+
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+.eye-btn:hover {
+    -fx-text-fill: #C8102E;
+}
+
+.eye-btn.active {
+    -fx-text-fill: #C8102E;
+}
+
+/* ─── Primary button ─── */
+.btn-primary {
+    -fx-background-color: linear-gradient(to bottom right, #C8102E, #6F0A18);
+    -fx-background-radius: 8;
+    -fx-text-fill: #ffffff;
+    -fx-font-weight: 700;
+    -fx-font-size: 13px;
+    -fx-padding: 12 20 12 20;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(200,16,46,0.30), 12, 0, 0, 3);
+}
+
+.btn-primary:hover {
+    -fx-background-color: linear-gradient(to bottom right, #e01436, #8a0d1f);
+}
+
+.btn-primary:pressed {
+    -fx-scale-x: 0.97;
+    -fx-scale-y: 0.97;
+}
+
+/* ─── Danger button ─── */
+.btn-danger {
+    -fx-background-color: #fff0f0;
+    -fx-background-radius: 8;
+    -fx-text-fill: #ba1a1a;
+    -fx-font-weight: 700;
+    -fx-font-size: 13px;
+    -fx-padding: 12 22 12 22;
+    -fx-cursor: hand;
+    -fx-border-color: #ffc5c5;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+}
+
+.btn-danger:hover {
+    -fx-background-color: #ffe0e0;
+    -fx-border-color: #ba1a1a;
+}
+
+.btn-danger:pressed {
+    -fx-scale-x: 0.97;
+    -fx-scale-y: 0.97;
+}
+
+/* ─── Secondary button ─── */
+.btn-secondary {
+    -fx-background-color: #f3d6da;
+    -fx-background-radius: 8;
+    -fx-text-fill: #6F0A18;
+    -fx-font-weight: 700;
+    -fx-font-size: 13px;
+    -fx-padding: 12 28 12 28;
+    -fx-cursor: hand;
+}
+
+.btn-secondary:hover {
+    -fx-background-color: #f0bfc7;
+}
+
+.btn-secondary:pressed {
+    -fx-scale-x: 0.97;
+    -fx-scale-y: 0.97;
+}
+
+/* ─── Table header bar ─── */
+.table-header {
+    -fx-background-color: #ffffff;
+    -fx-border-color: transparent transparent #eef4fc transparent;
+    -fx-border-width: 0 0 1 0;
+    -fx-background-radius: 12 12 0 0;
+}
+
+.table-header-title {
+    -fx-font-size: 14px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #161c22;
+}
+
+/* ─── TableView base ─── */
+.admin-table {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+    -fx-fixed-cell-size: 38;
+}
+
+.admin-table .column-header-background {
+    -fx-background-color: #dde3eb;
+}
+
+.admin-table .column-header {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.admin-table .column-header .label {
+    -fx-font-size: 11px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #6b7280;
+    -fx-padding: 0 8 0 8;
+}
+
+/* ─── Filas normales ─── */
+.admin-table .table-row-cell {
+    -fx-background-color: #ffffff;
+    -fx-border-color: transparent transparent #f0f4f8 transparent;
+    -fx-border-width: 0 0 1 0;
+    -fx-padding: 0;
+    -fx-cell-size: 38;
+}
+
+.admin-table .table-row-cell:odd {
+    -fx-background-color: #f8fbff;
+}
+
+/* ─── Fila Super Admin ─── */
+.row-super-admin {
+    -fx-background-color: #fffbe6 !important;
+    -fx-border-color: transparent transparent #f5d87a transparent !important;
+    -fx-border-width: 0 0 1 0 !important;
+}
+
+.row-super-admin .text {
+    -fx-fill: #7a5c00;
+    -fx-font-weight: 700;
+}
+
+.row-super-admin:selected {
+    -fx-background-color: #fef3c0 !important;
+}
+
+.row-super-admin:selected .text {
+    -fx-fill: #7a5c00;
+}
+
+/* ─── Badges ─── */
+.role-badge-super {
+    -fx-background-color: #fde68a;
+    -fx-background-radius: 20;
+    -fx-text-fill: #7a5c00;
+    -fx-font-size: 11px;
+    -fx-font-weight: 700;
+    -fx-padding: 3 10 3 10;
+}
+
+.role-badge-admin {
+    -fx-background-color: #dbeafe;
+    -fx-background-radius: 20;
+    -fx-text-fill: #1e40af;
+    -fx-font-size: 11px;
+    -fx-font-weight: 700;
+    -fx-padding: 3 10 3 10;
+}
+
+/* ─── Celdas ─── */
+.admin-table .table-cell {
+    -fx-font-size: 13px;
+    -fx-text-fill: #161c22;
+    -fx-padding: 0 8 0 8;
+    -fx-alignment: CENTER-LEFT;
+    -fx-content-display: LEFT;
+}
+
+/* ─── Selección normal ─── */
+.admin-table .table-row-cell:selected {
+    -fx-background-color: #fde4e7;
+}
+
+.admin-table .table-row-cell:selected .text {
+    -fx-fill: #000000;
+    -fx-font-weight: 700;
+}
+
+/* ─── Footer ─── */
+.action-footer {
+    -fx-background-color: #f6f9ff;
+}
+
+.locked-section {
+    -fx-opacity: 0.45;
+}

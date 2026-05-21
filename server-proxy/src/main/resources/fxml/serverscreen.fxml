@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane prefHeight="620.0" prefWidth="860.0" stylesheets="@../styles/server.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ServerScreenController">
+
+    <VBox spacing="0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
+
+        <VBox spacing="12" styleClass="section-header">
+            <padding>
+                <Insets bottom="20" left="36" right="36" top="24" />
+            </padding>
+
+            <HBox alignment="CENTER_RIGHT" spacing="12">
+                <Region HBox.hgrow="ALWAYS" />
+                <Button fx:id="serverButton" onAction="#handleToggleServer" prefHeight="42.0" prefWidth="180.0" styleClass="btn-primary" text="Prender servidor" />
+            </HBox>
+
+            <Label fx:id="sectionTitleLabel" styleClass="section-title" text="Agrega, consulta y elimina dominios y palabras clave del proxy" />
+        </VBox>
+
+        <HBox fx:id="adminContent" spacing="20" VBox.vgrow="ALWAYS">
+            <padding>
+                <Insets bottom="0" left="36" right="36" top="0" />
+            </padding>
+
+            <VBox minWidth="200" prefHeight="430.0" prefWidth="272.0" spacing="20" styleClass="card">
+                <padding>
+                    <Insets bottom="28" left="24" right="24" top="28" />
+                </padding>
+
+                <Label styleClass="card-title" text="Nueva regla" />
+
+                <VBox spacing="6">
+                    <Label styleClass="field-label" text="Dominio" />
+                    <TextField fx:id="usernameField" promptText="Direccion del dominio" styleClass="field-input" />
+                </VBox>
+
+                <Button fx:id="createButton" maxWidth="Infinity" onAction="#handleCreateAdmin" prefHeight="42.0" styleClass="btn-primary" text="Agregar dominio" />
+
+                <VBox spacing="6">
+                    <Label styleClass="field-label" text="Palabra clave" />
+                    <TextField fx:id="keyword_tf" promptText="Palabra clave" styleClass="field-input" />
+                </VBox>
+
+                <Button fx:id="createKeyword_btn" maxWidth="Infinity" onAction="#handleCreateKeyword" prefHeight="42.0" styleClass="btn-primary" text="Agregar palabra" />
+            </VBox>
+
+            <VBox spacing="0" styleClass="card" HBox.hgrow="ALWAYS">
+                <HBox alignment="CENTER_LEFT" spacing="12" styleClass="table-header">
+                    <padding>
+                        <Insets bottom="16" left="20" right="20" top="16" />
+                    </padding>
+
+                    <Label styleClass="table-header-title" text="Lista de reglas" HBox.hgrow="ALWAYS" />
+                </HBox>
+
+                <TableView fx:id="adminTable" styleClass="admin-table" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="idColumn" minWidth="60" prefWidth="493.0" text="Tipo y valor" />
+                    </columns>
+                </TableView>
+            </VBox>
+        </HBox>
+
+        <VBox spacing="4" styleClass="section-header">
+            <padding>
+                <Insets bottom="12" left="36" right="36" top="24" />
+            </padding>
+        </VBox>
+
+        <HBox alignment="CENTER_LEFT" styleClass="action-footer">
+            <padding>
+                <Insets bottom="28" left="36" right="36" top="12" />
+            </padding>
+            <Region HBox.hgrow="ALWAYS" />
+            <Button fx:id="revokeButton" onAction="#handleRevokeAdmin" styleClass="btn-danger" text="Quitar" />
+        </HBox>
+
+    </VBox>
+</AnchorPane>
