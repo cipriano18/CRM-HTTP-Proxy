@@ -1,0 +1,111 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "IBM Plex Sans", sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
+  --color-ink-950: #04131c;
+  --color-ink-900: #082231;
+  --color-ink-800: #10354a;
+  --color-ink-700: #1b4f68;
+  --color-ocean-500: #1098ad;
+  --color-ocean-400: #35b7cb;
+  --color-mint-500: #22c55e;
+  --color-amber-400: #fbbf24;
+  --color-coral-500: #f97316;
+  --color-shell-50: #f7fbfc;
+  --color-shell-100: #edf6f8;
+}
+
+@layer base {
+  :root {
+    color: #d7e4eb;
+    background:
+      radial-gradient(circle at top, rgba(53, 183, 203, 0.16), transparent 30%),
+      linear-gradient(180deg, #04131c 0%, #071d2a 45%, #031018 100%);
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    min-width: 320px;
+    min-height: 100vh;
+    font-family: var(--font-sans);
+  }
+
+  button,
+  input,
+  select {
+    font: inherit;
+  }
+
+  #root {
+    min-height: 100vh;
+  }
+}
+
+@layer components {
+  .panel-surface {
+    @apply rounded-3xl border border-white/10 bg-slate-800/55 shadow-xl shadow-black/20;
+  }
+
+  .panel-grid {
+    @apply grid gap-6 xl:grid-cols-[1.6fr_1fr];
+  }
+
+  .reveal-fade {
+    animation: reveal-fade 0.7s ease-out both;
+    animation-delay: var(--reveal-delay, 0ms);
+  }
+
+  .reveal-up {
+    animation: reveal-up 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    animation-delay: var(--reveal-delay, 0ms);
+  }
+
+  .reveal-scale {
+    animation: reveal-up 0.65s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    animation-delay: var(--reveal-delay, 0ms);
+  }
+}
+
+@keyframes reveal-fade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-fade,
+  .reveal-up,
+  .reveal-scale {
+    animation: none;
+  }
+}
