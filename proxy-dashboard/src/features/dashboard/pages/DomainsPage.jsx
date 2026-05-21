@@ -3,6 +3,7 @@ import { ArrowLeft, Globe } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import PageShell from '@/components/layout/PageShell.jsx'
 import DomainsDirectory from '@/features/dashboard/components/DomainsDirectory.jsx'
+import { exportDomainsCsv } from '@/features/dashboard/lib/reportExports.js'
 import { useDashboardMetrics } from '@/features/dashboard/hooks/useDashboardMetrics.js'
 
 function DomainsPage() {
@@ -65,7 +66,7 @@ function DomainsPage() {
       </section>
 
       <div className="reveal-up" style={{ '--reveal-delay': '160ms' }}>
-        <DomainsDirectory domains={sortedDomains} />
+        <DomainsDirectory domains={sortedDomains} onExportCsv={exportDomainsCsv} />
       </div>
     </PageShell>
   )

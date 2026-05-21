@@ -3,6 +3,7 @@ import { ArrowLeft, Users } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import PageShell from '@/components/layout/PageShell.jsx'
 import ActiveClientsDirectory from '@/features/dashboard/components/ActiveClientsDirectory.jsx'
+import { exportActiveClientsCsv } from '@/features/dashboard/lib/reportExports.js'
 import { useDashboardMetrics } from '@/features/dashboard/hooks/useDashboardMetrics.js'
 
 function ActiveClientsPage() {
@@ -65,7 +66,10 @@ function ActiveClientsPage() {
       </section>
 
       <div className="reveal-up" style={{ '--reveal-delay': '160ms' }}>
-        <ActiveClientsDirectory activeClients={sortedClients} />
+        <ActiveClientsDirectory
+          activeClients={sortedClients}
+          onExportCsv={exportActiveClientsCsv}
+        />
       </div>
     </PageShell>
   )

@@ -1,11 +1,12 @@
 import { useDeferredValue, useState } from 'react'
 import { Search } from 'lucide-react'
+import CsvExportButton from '@/components/ui/CsvExportButton.jsx'
 import Panel from '@/components/ui/Panel.jsx'
 import { formatRequestCount } from '@/lib/formatters.js'
 
 const PAGE_SIZE = 8
 
-function DomainsDirectory({ domains }) {
+function DomainsDirectory({ domains, onExportCsv }) {
   const [searchTerm, setSearchTerm] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const deferredSearchTerm = useDeferredValue(searchTerm)
@@ -37,19 +38,27 @@ function DomainsDirectory({ domains }) {
             </p>
           </div>
 
-          <label className="flex w-full max-w-md items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
-            <Search className="h-4 w-4 text-slate-400" />
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(event) => {
-                setSearchTerm(event.target.value)
-                setCurrentPage(1)
-              }}
-              placeholder="Filtrar por dominio"
-              className="w-full bg-transparent text-sm text-slate-100 outline-none placeholder:text-slate-500"
+          <div className="flex w-full max-w-2xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+            <label className="flex w-full items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+              <Search className="h-4 w-4 text-slate-400" />
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(event) => {
+                  setSearchTerm(event.target.value)
+                  setCurrentPage(1)
+                }}
+                placeholder="Filtrar por dominio"
+                className="w-full bg-transparent text-sm text-slate-100 outline-none placeholder:text-slate-500"
+              />
+            </label>
+
+            <CsvExportButton
+              className="shrink-0"
+              label="Exportar CSV"
+              onClick={() => onExportCsv(filteredDomains)}
             />
-          </label>
+          </div>
         </div>
 
         <div className="mt-6 overflow-hidden rounded-2xl border border-white/10">

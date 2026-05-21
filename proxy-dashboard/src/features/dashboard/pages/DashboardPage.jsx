@@ -11,6 +11,7 @@ import RequestsStatusChart from '@/features/dashboard/components/RequestsStatusC
 import TopDomainsChart from '@/features/dashboard/components/TopDomainsChart.jsx'
 import TopDomainsTable from '@/features/dashboard/components/TopDomainsTable.jsx'
 import { useDashboardMetrics } from '@/features/dashboard/hooks/useDashboardMetrics.js'
+import { exportDashboardCsv } from '@/features/dashboard/lib/reportExports.js'
 
 function RefreshToast({ isVisible }) {
   return (
@@ -86,11 +87,21 @@ function DashboardPage() {
   const topDomains = sortedDomains.slice(0, 5)
   const topActiveClients = sortedClients.slice(0, 5)
 
+  const handleExportDashboardCsv = () => {
+    exportDashboardCsv({
+      activeClients: sortedClients,
+      domains: sortedDomains,
+      lastUpdated,
+      metrics,
+    })
+  }
+
   return (
     <>
       <PageShell className="pb-0">
         <DashboardHeader
           lastUpdated={lastUpdated}
+          onExportCsv={handleExportDashboardCsv}
           onManualRefresh={handleManualRefresh}
         />
 

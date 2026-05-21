@@ -6,11 +6,12 @@ import {
   RefreshCcw,
   Server,
 } from 'lucide-react'
+import CsvExportButton from '@/components/ui/CsvExportButton.jsx'
 import refreshSound from '@/features/dashboard/assets/refresh.mp3'
 import { appConfig } from '@/config/appConfig.js'
 import { formatTime } from '@/lib/formatters.js'
 
-function DashboardHeader({ lastUpdated, onManualRefresh }) {
+function DashboardHeader({ lastUpdated, onExportCsv, onManualRefresh }) {
   const refreshAudioRef = useRef(null)
 
   useEffect(() => {
@@ -55,31 +56,35 @@ function DashboardHeader({ lastUpdated, onManualRefresh }) {
           </p>
         </div>
 
-        <div className="flex items-stretch">
-          <div className="flex overflow-hidden rounded-[1.7rem] border border-white/10 bg-slate-950/30 shadow-lg shadow-black/15">
-            <div className="flex min-w-[12.5rem] items-center gap-3 bg-white/6 px-4 py-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/8 text-cyan-200">
-                <Clock3 className="h-4 w-4" />
+        <div className="flex flex-col gap-3 sm:items-end">
+          <div className="flex items-stretch">
+            <div className="flex overflow-hidden rounded-[1.7rem] border border-white/10 bg-slate-950/30 shadow-lg shadow-black/15">
+              <div className="flex min-w-[12.5rem] items-center gap-3 bg-white/6 px-4 py-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/8 text-cyan-200">
+                  <Clock3 className="h-4 w-4" />
+                </div>
+                <div>
+                  <p className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-slate-500">
+                    Última actualización
+                  </p>
+                  <p className="mt-1 text-sm font-medium text-slate-100">
+                    {lastUpdated ? formatTime(lastUpdated) : 'Cargando...'}
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-slate-500">
-                  Última actualización
-                </p>
-                <p className="mt-1 text-sm font-medium text-slate-100">
-                  {lastUpdated ? formatTime(lastUpdated) : 'Cargando...'}
-                </p>
-              </div>
-            </div>
 
-            <button
-              type="button"
-              onClick={handleRefreshClick}
-              className="group inline-flex items-center justify-center gap-2 bg-cyan-400 px-5 py-3 font-semibold text-slate-950 transition duration-300 ease-out hover:bg-cyan-200"
-            >
-              <RefreshCcw className="h-4 w-4 transition-transform duration-500 ease-out group-hover:-rotate-360" />
-              Actualizar
-            </button>
+              <button
+                type="button"
+                onClick={handleRefreshClick}
+                className="group inline-flex items-center justify-center gap-2 bg-cyan-400 px-5 py-3 font-semibold text-slate-950 transition duration-300 ease-out hover:bg-cyan-200"
+              >
+                <RefreshCcw className="h-4 w-4 transition-transform duration-500 ease-out group-hover:-rotate-360" />
+                Actualizar
+              </button>
+            </div>
           </div>
+
+          <CsvExportButton label="Exportar reporte CSV" onClick={onExportCsv} />
         </div>
       </div>
 
