@@ -6,8 +6,8 @@ import java.net.Socket;
 import java.net.SocketException;
 
 /**
- * Servidor principal del proxy.
- * Escucha conexiones de navegadores o clientes HTTP.
+ * Servidor principal del proxy. Escucha conexiones de navegadores o clientes
+ * HTTP.
  */
 public class ProxyServer {
 
@@ -21,8 +21,7 @@ public class ProxyServer {
     private ServerSocket serverSocket;
 
     /**
-     * Inicia el servidor proxy.
-     * Por cada cliente crea un hilo independiente.
+     * Inicia el servidor proxy. Por cada cliente crea un hilo independiente.
      */
     public void start() {
         if (running) {

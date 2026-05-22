@@ -3,5 +3,5 @@ export const appConfig = {
   defaultRefreshIntervalMs: 3000,
   metricsEndpoint:
     import.meta.env.VITE_PROXY_METRICS_URL ??
-    'http://localhost:8080/api/dashboard/metrics',
+    'http://192.168.1.5:8090/api/dashboard/metrics',
 }

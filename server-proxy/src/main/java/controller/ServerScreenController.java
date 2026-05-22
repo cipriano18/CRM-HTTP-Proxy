@@ -16,14 +16,15 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
+import server.DashboardApiServer;
 import server.ProxyServer;
 
 /**
  * Controlador de la pantalla de administracion del proxy.
  *
  * <p>
- * Permite administrar dominios y palabras clave bloqueadas,
- * ademas de controlar el arranque del servidor proxy.
+ * Permite administrar dominios y palabras clave bloqueadas, ademas de controlar
+ * el arranque del servidor proxy.
  * </p>
  */
 public class ServerScreenController {
@@ -64,16 +65,18 @@ public class ServerScreenController {
 
     private final ProxyServer proxyServer = new ProxyServer();
 
+    private final DashboardApiServer dashboardApiServer
+            = new DashboardApiServer();
     private Thread serverThread;
 
     private boolean serverRunning;
 
-    private final ObservableList<BlockRuleEntry> rules =
-            FXCollections.observableArrayList();
+    private final ObservableList<BlockRuleEntry> rules
+            = FXCollections.observableArrayList();
 
     /**
-     * Inicializa la vista y deja bloqueada la administracion
-     * hasta que el proxy sea encendido.
+     * Inicializa la vista y deja bloqueada la administracion hasta que el proxy
+     * sea encendido.
      */
     @FXML
     public void initialize() {
@@ -237,10 +240,14 @@ public class ServerScreenController {
             return;
         }
 
-        serverThread = new Thread(() -> proxyServer.start());
+        serverThread = new Thread(() -> {
+            proxyServer.start();
+        });
+
         serverThread.setDaemon(true);
         serverThread.start();
 
+        dashboardApiServer.start();
         serverRunning = true;
         updateServerState(true);
 
@@ -260,7 +267,7 @@ public class ServerScreenController {
         }
 
         proxyServer.stop();
-
+        dashboardApiServer.stop();
         if (serverThread != null && serverThread.isAlive()) {
             try {
                 serverThread.join(1500);
