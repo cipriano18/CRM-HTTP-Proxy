@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "CRM Proxy Block Page",
+  "version": "1.0",
+  "description": "Muestra una página personalizada cuando el proxy bloquea una página HTTPS.",
+  "permissions": [
+    "webNavigation",
+    "tabs"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  }
+}

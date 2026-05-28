@@ -1,3 +1,5 @@
 KEYWORD:info
 DOMAIN:www.facebook.com
 DOMAIN:es.pornhub.com
+DOMAIN:www.wikipedia.org
+DOMAIN:http.badssl.com
