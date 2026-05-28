@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # Configuración del Proxy en Windows
 
 ## Integrantes
