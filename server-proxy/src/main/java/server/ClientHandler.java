@@ -15,10 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
-/**
- * Atiende cada cliente conectado al proxy.
- * Soporta HTTP tradicional y tuneles HTTPS con filtrado por SNI.
- */
 public class ClientHandler implements Runnable {
 
     private static final String BLOCKED_HTML_PATH =
@@ -74,7 +70,8 @@ public class ClientHandler implements Runnable {
                 return;
             }
 
-            String host = cleanHost(hostHeader);
+            String host = extractHttpHost(hostHeader);
+            int port = extractHttpPort(hostHeader);
 
             if (isDomainBlocked(host)) {
                 System.out.println("DOMINIO BLOQUEADO: " + host);
@@ -110,8 +107,15 @@ public class ClientHandler implements Runnable {
                     return;
                 }
 
-                String headers = rebuildHeadersWithoutProxyConnection(headerLines);
-                forwardHttpRequest(requestLine, host, headers);
+                String headers =
+                        rebuildHeadersWithoutProxyConnection(headerLines);
+
+                forwardHttpRequest(
+                        requestLine,
+                        host,
+                        port,
+                        headers
+                );
                 return;
             }
 
@@ -136,10 +140,6 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    /**
-     * Procesa una solicitud CONNECT, inspecciona el SNI y decide si
-     * permite o bloquea el tunel HTTPS.
-     */
     private void handleConnectRequest(
             String requestLine,
             InputStream clientIn) throws IOException {
@@ -214,19 +214,20 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    /**
-     * Reenvia la solicitud HTTP al servidor real y devuelve la respuesta al navegador.
-     */
     private void forwardHttpRequest(
             String requestLine,
             String host,
+            int port,
             String headers) throws IOException {
 
-        System.out.println("REENVIANDO A INTERNET: " + host);
+        System.out.println(
+                "REENVIANDO A INTERNET: "
+                        + host + ":" + port
+        );
 
         long totalBytes = 0;
 
-        try (Socket serverSocket = new Socket(host, 80)) {
+        try (Socket serverSocket = new Socket(host, port)) {
             serverSocket.setSoTimeout(10000);
 
             OutputStream serverOut = serverSocket.getOutputStream();
@@ -234,13 +235,28 @@ public class ClientHandler implements Runnable {
             String newRequestLine =
                     convertProxyRequestLineToOriginRequestLine(
                             requestLine,
-                            host
+                            host,
+                            port
                     );
 
-            serverOut.write((newRequestLine + "\r\n").getBytes(StandardCharsets.UTF_8));
-            serverOut.write(headers.getBytes(StandardCharsets.UTF_8));
-            serverOut.write("Connection: close\r\n".getBytes(StandardCharsets.UTF_8));
-            serverOut.write("\r\n".getBytes(StandardCharsets.UTF_8));
+            serverOut.write(
+                    (newRequestLine + "\r\n")
+                            .getBytes(StandardCharsets.UTF_8)
+            );
+
+            serverOut.write(
+                    headers.getBytes(StandardCharsets.UTF_8)
+            );
+
+            serverOut.write(
+                    "Connection: close\r\n"
+                            .getBytes(StandardCharsets.UTF_8)
+            );
+
+            serverOut.write(
+                    "\r\n".getBytes(StandardCharsets.UTF_8)
+            );
+
             serverOut.flush();
 
             OutputStream clientOut = clientSocket.getOutputStream();
@@ -266,9 +282,6 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    /**
-     * Tuneliza trafico HTTPS en ambos sentidos sin inspeccion adicional.
-     */
     private long tunnelHttpsTraffic(Socket client, Socket server)
             throws IOException {
 
@@ -293,9 +306,6 @@ public class ClientHandler implements Runnable {
         return totalBytes.get();
     }
 
-    /**
-     * Copia bytes de un socket origen a otro destino.
-     */
     private void copyStream(
             Socket sourceSocket,
             Socket targetSocket,
@@ -321,9 +331,6 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    /**
-     * Lee solo los encabezados HTTP iniciales sin consumir datos TLS posteriores.
-     */
     private String readHttpHeaderBlock(InputStream input) throws IOException {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         int previous = -1;
@@ -361,9 +368,6 @@ public class ClientHandler implements Runnable {
         return buffer.toString(StandardCharsets.UTF_8);
     }
 
-    /**
-     * Convierte los encabezados HTTP a una lista de lineas.
-     */
     private List<String> splitHeaderLines(String headerText) {
         List<String> lines = new ArrayList<>();
 
@@ -377,9 +381,6 @@ public class ClientHandler implements Runnable {
         return lines;
     }
 
-    /**
-     * Reconstruye encabezados para reenviar una solicitud HTTP.
-     */
     private String rebuildHeadersWithoutProxyConnection(List<String> headerLines) {
         StringBuilder headersBuilder = new StringBuilder();
 
@@ -394,9 +395,6 @@ public class ClientHandler implements Runnable {
         return headersBuilder.toString();
     }
 
-    /**
-     * Obtiene el host desde los encabezados HTTP.
-     */
     private String extractHostHeader(List<String> headerLines) {
         for (int i = 1; i < headerLines.size(); i++) {
             String line = headerLines.get(i);
@@ -409,9 +407,32 @@ public class ClientHandler implements Runnable {
         return null;
     }
 
-    /**
-     * Responde al navegador que el tunel CONNECT fue aceptado.
-     */
+    private String extractHttpHost(String hostHeader) {
+        String clean = hostHeader == null ? "" : hostHeader.trim();
+
+        if (clean.contains(":")) {
+            return clean.substring(0, clean.lastIndexOf(":")).toLowerCase();
+        }
+
+        return clean.toLowerCase();
+    }
+
+    private int extractHttpPort(String hostHeader) {
+        String clean = hostHeader == null ? "" : hostHeader.trim();
+
+        if (!clean.contains(":")) {
+            return 80;
+        }
+
+        try {
+            return Integer.parseInt(
+                    clean.substring(clean.lastIndexOf(":") + 1)
+            );
+        } catch (NumberFormatException e) {
+            return 80;
+        }
+    }
+
     private void sendConnectEstablished() throws IOException {
         OutputStream out = clientSocket.getOutputStream();
         out.write("HTTP/1.1 200 Connection Established\r\n\r\n"
@@ -419,13 +440,10 @@ public class ClientHandler implements Runnable {
         out.flush();
     }
 
-    /**
-     * Convierte la primera linea que llega al proxy
-     * en una linea valida para el servidor real.
-     */
     private String convertProxyRequestLineToOriginRequestLine(
             String requestLine,
-            String host) {
+            String host,
+            int port) {
 
         String[] parts = requestLine.split(" ");
 
@@ -438,9 +456,16 @@ public class ClientHandler implements Runnable {
         String version = parts[2];
 
         String path = url;
-        String prefixHttp = "http://" + host;
 
-        if (url.startsWith(prefixHttp)) {
+        String prefixHttpWithPort =
+                "http://" + host + ":" + port;
+
+        String prefixHttp =
+                "http://" + host;
+
+        if (url.startsWith(prefixHttpWithPort)) {
+            path = url.substring(prefixHttpWithPort.length());
+        } else if (url.startsWith(prefixHttp)) {
             path = url.substring(prefixHttp.length());
         }
 
@@ -451,25 +476,16 @@ public class ClientHandler implements Runnable {
         return method + " " + path + " " + version;
     }
 
-    /**
-     * Obtiene el metodo HTTP.
-     */
     private String getMethod(String requestLine) {
         String[] parts = requestLine.split(" ");
         return parts.length > 0 ? parts[0] : "";
     }
 
-    /**
-     * Obtiene la URL solicitada.
-     */
     private String getUrl(String requestLine) {
         String[] parts = requestLine.split(" ");
         return parts.length > 1 ? parts[1] : "";
     }
 
-    /**
-     * Extrae el host a partir del destino de CONNECT.
-     */
     private String extractConnectHost(String connectTarget) {
         String cleanTarget = connectTarget == null ? "" : connectTarget.trim();
         int separatorIndex = cleanTarget.lastIndexOf(':');
@@ -481,9 +497,6 @@ public class ClientHandler implements Runnable {
         return cleanHost(cleanTarget.substring(0, separatorIndex));
     }
 
-    /**
-     * Extrae el puerto a partir del destino de CONNECT.
-     */
     private int extractConnectPort(String connectTarget) {
         String cleanTarget = connectTarget == null ? "" : connectTarget.trim();
         int separatorIndex = cleanTarget.lastIndexOf(':');
@@ -493,15 +506,14 @@ public class ClientHandler implements Runnable {
         }
 
         try {
-            return Integer.parseInt(cleanTarget.substring(separatorIndex + 1));
+            return Integer.parseInt(
+                    cleanTarget.substring(separatorIndex + 1)
+            );
         } catch (NumberFormatException e) {
             return HTTPS_DEFAULT_PORT;
         }
     }
 
-    /**
-     * Limpia el host quitando puertos comunes.
-     */
     private String cleanHost(String host) {
         return host.replace(":80", "")
                 .replace(":443", "")
@@ -509,9 +521,6 @@ public class ClientHandler implements Runnable {
                 .trim();
     }
 
-    /**
-     * Revisa bloqueo por dominio.
-     */
     private boolean isDomainBlocked(String host) {
         List<String> blockedDomains = BlocklistManager.getDomains();
 
@@ -531,9 +540,6 @@ public class ClientHandler implements Runnable {
         return false;
     }
 
-    /**
-     * Revisa bloqueo por palabra clave en URL HTTP.
-     */
     private boolean isKeywordBlocked(String url) {
         List<String> blockedKeywords = BlocklistManager.getKeywords();
         String cleanUrl = url.toLowerCase();
@@ -553,9 +559,6 @@ public class ClientHandler implements Runnable {
         return false;
     }
 
-    /**
-     * Envia la pagina HTML de bloqueo para HTTP.
-     */
     private void sendBlockedPage() throws IOException {
         String html = Files.readString(
                 Paths.get(BLOCKED_HTML_PATH),
@@ -579,9 +582,6 @@ public class ClientHandler implements Runnable {
         closeQuietly(clientSocket);
     }
 
-    /**
-     * Envia una respuesta HTML simple.
-     */
     private void sendSimpleResponse(
             String status,
             String html) throws IOException {
@@ -603,9 +603,6 @@ public class ClientHandler implements Runnable {
         closeQuietly(clientSocket);
     }
 
-    /**
-     * Cierra un socket ignorando errores.
-     */
     private void closeQuietly(Socket socket) {
         if (socket == null || socket.isClosed()) {
             return;
