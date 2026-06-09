@@ -11,15 +11,27 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 
 /**
+ * Servidor HTTP auxiliar que expone metricas del proxy
+ * para el dashboard local.
+ *
  *
  * @author cipriano
  */
 public class DashboardApiServer {
 
+    /**
+     * Puerto donde se publica la API del dashboard.
+     */
     private static final int PORT = 8090;
 
+    /**
+     * Instancia interna del servidor HTTP embebido.
+     */
     private HttpServer server;
 
+    /**
+     * Inicia la API local y registra el endpoint de metricas.
+     */
     public void start() {
         try {
 
@@ -50,6 +62,9 @@ public class DashboardApiServer {
         }
     }
 
+    /**
+     * Detiene la API del dashboard si se encuentra activa.
+     */
     public void stop() {
         if (server != null) {
             server.stop(0);
