@@ -2,10 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package server;
+package dashboard;
 
 import com.sun.net.httpserver.HttpServer;
-import controller.LogController;
+import dashboard.LogController;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;

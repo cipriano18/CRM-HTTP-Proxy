@@ -1,4 +1,4 @@
-package server;
+package proxy.tls;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;

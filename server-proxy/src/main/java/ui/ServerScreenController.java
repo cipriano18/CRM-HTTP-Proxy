@@ -1,4 +1,4 @@
-package controller;
+package ui;
 
 import filter.BlocklistManager;
 import java.util.ArrayList;
@@ -16,8 +16,8 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
-import server.DashboardApiServer;
-import server.ProxyServer;
+import dashboard.DashboardApiServer;
+import proxy.core.ProxyServer;
 
 /**
  * Controlador de la pantalla de administracion del proxy.

@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package controller;
+package dashboard;
 
 import com.sun.net.httpserver.HttpExchange;
 import java.io.IOException;
@@ -14,13 +14,27 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * Controlador HTTP encargado de leer el log del proxy
+ * y convertirlo en metricas JSON para el dashboard.
+ *
  *
  * @author cipriano
  */
 public class LogController {
 
+    /**
+     * Ruta del archivo de log que se analiza para construir
+     * las metricas agregadas.
+     */
     private static final String LOG_PATH = "src/main/resources/data/proxy.log";
 
+    /**
+     * Atiende la solicitud HTTP de metricas del dashboard.
+     *
+     * @param exchange intercambio HTTP recibido.
+     * @throws IOException si falla la lectura del log
+     * o el envio de la respuesta.
+     */
     public static void handleMetrics(HttpExchange exchange) throws IOException {
         exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
         exchange.getResponseHeaders().set("Content-Type", "application/json; charset=UTF-8");
@@ -89,6 +103,13 @@ public class LogController {
         exchange.close();
     }
 
+    /**
+     * Extrae el valor de una clave dentro de una linea del log.
+     *
+     * @param line linea completa del archivo.
+     * @param key prefijo buscado, por ejemplo IP= o URL=.
+     * @return valor asociado o cadena vacia si no existe.
+     */
     private static String extractValue(String line, String key) {
         int start = line.indexOf(key);
 
@@ -107,6 +128,18 @@ public class LogController {
         return line.substring(start, end).trim();
     }
 
+    /**
+     * Construye el documento JSON de respuesta con los acumulados
+     * calculados a partir del log.
+     *
+     * @param totalRequests total de solicitudes registradas.
+     * @param blocked cantidad de solicitudes bloqueadas.
+     * @param allowed cantidad de solicitudes permitidas.
+     * @param totalMB trafico total en megabytes.
+     * @param domains contador agrupado por URL o dominio.
+     * @param clients contador agrupado por IP cliente.
+     * @return respuesta JSON serializada manualmente.
+     */
     private static String buildJson(
             int totalRequests,
             int blocked,
@@ -136,6 +169,13 @@ public class LogController {
         return json.toString();
     }
 
+    /**
+     * Agrega al JSON una coleccion de pares clave-conteo.
+     *
+     * @param json acumulador principal de la respuesta.
+     * @param data mapa con conteos.
+     * @param fieldName nombre del campo que representara la clave.
+     */
     private static void appendCounterArray(
             StringBuilder json,
             Map<String, Integer> data,
@@ -158,6 +198,13 @@ public class LogController {
         }
     }
 
+    /**
+     * Escapa caracteres especiales para que un texto
+     * sea valido dentro del JSON generado.
+     *
+     * @param value texto original.
+     * @return texto escapado.
+     */
     private static String escapeJson(String value) {
         return value.replace("\\", "\\\\").replace("\"", "\\\"");
     }

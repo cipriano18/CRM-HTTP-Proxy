@@ -1,4 +1,4 @@
-package server;
+package proxy.core;
 
 import filter.BlocklistManager;
 import logger.ProxyLogger;
@@ -14,6 +14,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
+import proxy.tls.SniExtractor;
+import proxy.tls.TlsClientHelloReader;
 
 public class ClientHandler implements Runnable {
 

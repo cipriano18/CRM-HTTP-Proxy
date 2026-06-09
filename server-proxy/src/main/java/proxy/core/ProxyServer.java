@@ -1,4 +1,4 @@
-package server;
+package proxy.core;
 
 import java.io.IOException;
 import java.net.ServerSocket;
