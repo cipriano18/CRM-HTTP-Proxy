@@ -92,12 +92,18 @@ public class ClientHandler implements Runnable {
                     || method.equalsIgnoreCase("POST")
                     || method.equalsIgnoreCase("HEAD")) {
 
-                if (isKeywordBlocked(url)) {
-                    System.out.println("PALABRA BLOQUEADA EN URL: " + url);
+                String effectiveUrl = buildHttpUrlForFiltering(
+                        host,
+                        port,
+                        url
+                );
+
+                if (isKeywordBlocked(effectiveUrl)) {
+                    System.out.println("PALABRA BLOQUEADA EN URL: " + effectiveUrl);
 
                     ProxyLogger.logRequest(
                             clientSocket.getInetAddress().getHostAddress(),
-                            url,
+                            effectiveUrl,
                             method,
                             "BLOQUEADO",
                             0
@@ -486,6 +492,33 @@ public class ClientHandler implements Runnable {
         return parts.length > 1 ? parts[1] : "";
     }
 
+    private String buildHttpUrlForFiltering(String host, int port, String url) {
+        String cleanUrl = url == null ? "" : url.trim();
+        String cleanHost = host == null ? "" : host.trim().toLowerCase();
+
+        if (cleanUrl.isBlank()) {
+            cleanUrl = "/";
+        }
+
+        if (cleanUrl.startsWith("http://")
+                || cleanUrl.startsWith("https://")) {
+            return cleanUrl;
+        }
+
+        StringBuilder fullUrl = new StringBuilder("http://").append(cleanHost);
+
+        if (port > 0 && port != 80) {
+            fullUrl.append(":").append(port);
+        }
+
+        if (!cleanUrl.startsWith("/")) {
+            fullUrl.append("/");
+        }
+
+        fullUrl.append(cleanUrl);
+        return fullUrl.toString();
+    }
+
     private String extractConnectHost(String connectTarget) {
         String cleanTarget = connectTarget == null ? "" : connectTarget.trim();
         int separatorIndex = cleanTarget.lastIndexOf(':');
@@ -611,7 +644,6 @@ public class ClientHandler implements Runnable {
         try {
             socket.close();
         } catch (IOException e) {
-            // Nada que hacer.
         }
     }
 }
