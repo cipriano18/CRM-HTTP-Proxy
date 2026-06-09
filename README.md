@@ -68,6 +68,26 @@ El proxy funciona como intermediario entre el navegador del cliente e Internet, 
 
 ---
 
+## Estructura de paquetes en `server-proxy`
+
+Dentro de `server-proxy/src/main/java`, el servidor se organiza por responsabilidad para separar la interfaz, la lógica del proxy y los componentes auxiliares.
+
+| Paquete     | Descripción |
+| ----------- | ----------- |
+| `app`       | Contiene el punto de entrada de la aplicación JavaFX. |
+| `ui`        | Incluye los controladores de la interfaz gráfica del servidor. |
+| `proxy.core`| Contiene la lógica principal del proxy, como el servidor y el manejo de clientes. |
+| `proxy.tls` | Agrupa las clases encargadas de procesar conexiones HTTPS, como lectura de `ClientHello` y extracción de SNI. |
+| `server`    | Contiene servicios auxiliares del lado servidor, como la API local del dashboard. |
+| `controller`| Incluye controladores auxiliares, por ejemplo para exponer métricas del log. |
+| `filter`    | Maneja las reglas de bloqueo de dominios y palabras clave. |
+| `logger`    | Contiene la lógica de escritura del archivo de logs del proxy. |
+| `model`     | Agrupa clases de apoyo para representar datos del sistema. |
+
+Esta separación facilita el mantenimiento del proyecto y permite identificar con claridad qué parte del sistema corresponde a la interfaz, al procesamiento del tráfico HTTP/HTTPS y al monitoreo.
+
+---
+
 # Ejecución del Servidor Proxy
 
 ## 1. Abrir el proyecto en NetBeans
